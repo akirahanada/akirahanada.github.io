@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rakuten Ichiba Cart Redesign — Demo · Akira Hanada</title>
+  <meta name="description" content="Interactive demo of the redesigned Rakuten Ichiba mobile shopping cart by Akira Hanada." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234f46e5'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='52' font-weight='700' fill='white' text-anchor='middle'%3EAH%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../demo.css" />
+  <style>
+    .demo-intro h1 { font-family: "Space Grotesk", sans-serif; }
+    .cart { flex: 1; overflow-y: auto; font-size: 13px; }
+    .cart__bar { background: #e11d48; color: #fff; padding: 12px 16px; }
+    .cart__bar b { display: block; font-size: 15px; }
+    .cart__bar small { opacity: .85; font-size: 11px; }
+    .shop { padding: 12px 16px 4px; }
+    .shop__name { font-weight: 700; font-size: 12px; }
+    .ship { color: #16a34a; font-weight: 700; font-size: 11px; margin: 4px 0 6px; }
+    .ship__track { height: 8px; border-radius: 6px; background: #e5e7eb; overflow: hidden; }
+    .ship__fill { height: 100%; background: linear-gradient(90deg,#22c55e,#16a34a); border-radius: 6px; transition: width .4s ease; }
+    .item { display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
+    .item__img { width: 72px; height: 72px; border-radius: 10px; flex: none; }
+    .i1 { background: linear-gradient(135deg,#c8a27a,#a9825b); }
+    .i2 { background: linear-gradient(135deg,#8b7fc4,#6d5fb0); }
+    .item__t { font-weight: 700; font-size: 13px; }
+    .item__meta { color: #64748b; font-size: 11px; }
+    .stars { color: #f59e0b; font-size: 11px; }
+    .stars span { color: #94a3b8; }
+    .price { color: #e11d48; font-weight: 700; margin-top: 2px; }
+    .price s { color: #94a3b8; font-weight: 400; font-size: 11px; }
+    .qty { display: inline-flex; align-items: center; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; margin-top: 6px; }
+    .qty button { width: 28px; height: 28px; border: 0; background: #f8fafc; font-size: 15px; cursor: pointer; }
+    .qty button:hover { background: #eef2ff; color: var(--brand); }
+    .qty span { width: 30px; text-align: center; font-weight: 600; }
+    .save { color: var(--brand); font-size: 11px; font-weight: 600; margin-top: 6px; display: inline-block; cursor: pointer; }
+    .trust { display: flex; align-items: center; gap: 6px; color: #64748b; font-size: 11px; padding: 12px 16px; border-top: 1px solid #f1f5f9; }
+    .fbt { padding: 12px 16px; }
+    .fbt h4 { margin: 0 0 8px; font-size: 12px; }
+    .fbt__row { display: flex; gap: 8px; }
+    .fbt__row div { flex: 1; height: 56px; border-radius: 8px; }
+    .checkout { position: sticky; bottom: 0; background: #fff; border-top: 1px solid #e5e7eb; padding: 12px 16px; }
+    .total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .total b { font-size: 18px; }
+    .total small { color: #16a34a; font-size: 11px; }
+    .btn-checkout { width: 100%; background: #e11d48; color: #fff; border: 0; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .btn-checkout:hover { background: #be123c; }
+    .guest { text-align: center; color: var(--brand); font-weight: 600; font-size: 12px; margin-top: 8px; }
+    .toast { position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(10px); background: #111827; color: #fff; padding: 8px 14px; border-radius: 999px; font-size: 12px; opacity: 0; transition: .3s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <header class="demo-top">
+    <div class="demo-top__inner">
+      <a class="demo-top__back" href="../">← Back to portfolio</a>
+      <span class="demo-top__tag">Interactive demo · E-commerce</span>
+    </div>
+  </header>
+
+  <main class="demo-wrap">
+    <section class="demo-intro">
+      <h1>Rakuten Ichiba Cart Redesign</h1>
+      <p>
+        A mobile-first cart that treats checkout as a decision-making space. Try the
+        quantity steppers — the per-shop free-shipping bar and order total update live.
+      </p>
+      <div>
+        <span class="pill">Cost transparency</span>
+        <span class="pill">Guest checkout</span>
+        <span class="pill">Mobile-first</span>
+        <span class="pill">Trust signals</span>
+      </div>
+      <p class="demo-note">Prototype UI for portfolio demonstration. Not affiliated with Rakuten, Inc.</p>
+    </section>
+
+    <section class="device">
+      <div class="device__screen">
+        <div class="status"><span>9:41</span><span>5G 100%</span></div>
+        <div class="cart">
+          <div class="cart__bar"><b>Cart · <span id="count">3</span> items, 2 shops</b><small>Single-page checkout below ↓</small></div>
+
+          <div class="shop">
+            <div class="shop__name">Shop A — Tanaka Foods</div>
+            <div class="ship" id="shipText">Add ¥820 to unlock FREE shipping</div>
+            <div class="ship__track"><div class="ship__fill" id="shipFill" style="width:60%"></div></div>
+          </div>
+
+          <div class="item">
+            <div class="item__img i1"></div>
+            <div>
+              <div class="item__t">Premium Sencha Tea</div>
+              <div class="item__meta">Organic · 200g pouch · Loose</div>
+              <div class="stars">★★★★<span>★</span> 4.7 (1,284)</div>
+              <div class="price">¥3,980 <s>¥4,480</s></div>
+              <div class="qty" data-price="3980">
+                <button aria-label="decrease">−</button><span>1</span><button aria-label="increase">+</button>
+              </div>
+              <span class="save">♡ Save for later</span>
+            </div>
+          </div>
+
+          <div class="shop"><div class="shop__name">Shop B — Yokohama Crafts · Ships separately</div></div>
+
+          <div class="item">
+            <div class="item__img i2"></div>
+            <div>
+              <div class="item__t">Handmade Ceramic Bowl</div>
+              <div class="item__meta">Indigo glaze · 14cm · Gift wrap: Yes</div>
+              <div class="stars">★★★★★ 5.0 (67)</div>
+              <div class="price">¥4,280</div>
+              <div class="qty" data-price="4280">
+                <button aria-label="decrease">−</button><span>1</span><button aria-label="increase">+</button>
+              </div>
+              <span class="save">♡ Save for later</span>
+            </div>
+          </div>
+
+          <div class="trust">🔒 SSL secure · 30-day returns · Visa / JCB / PayPay</div>
+
+          <div class="fbt">
+            <h4>Frequently bought together</h4>
+            <div class="fbt__row">
+              <div style="background:linear-gradient(135deg,#60a5fa,#3b82f6)"></div>
+              <div style="background:linear-gradient(135deg,#f59e0b,#d97706)"></div>
+              <div style="background:linear-gradient(135deg,#34d399,#059669)"></div>
+            </div>
+          </div>
+
+          <div class="checkout">
+            <div class="total">
+              <div><small style="color:#64748b">Order total (tax &amp; shipping incl.)</small><br /><b id="total">¥8,260</b></div>
+              <small>saved ¥420 with points</small>
+            </div>
+            <button class="btn-checkout" id="checkoutBtn">Checkout</button>
+            <div class="guest">Continue as guest →</div>
+          </div>
+        </div>
+        <div class="toast" id="toast">Order placed — thank you!</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const FREE_THRESHOLD = 10000; // Shop A free-shipping tier (¥)
+    function yen(n){ return '¥' + n.toLocaleString('en-US'); }
+
+    function recalc(){
+      let total = 0, shopA = 0;
+      document.querySelectorAll('.qty').forEach((q, i) => {
+        const price = +q.dataset.price;
+        const n = +q.querySelector('span').textContent;
+        total += price * n;
+        if (i === 0) shopA += price * n; // first item is Shop A
+      });
+      let itemCount = 0;
+      document.querySelectorAll('.qty span').forEach(s => itemCount += +s.textContent);
+      document.getElementById('count').textContent = itemCount;
+      document.getElementById('total').textContent = yen(total);
+
+      const remain = Math.max(0, FREE_THRESHOLD - shopA);
+      const fill = Math.min(100, (shopA / FREE_THRESHOLD) * 100);
+      document.getElementById('shipFill').style.width = fill + '%';
+      document.getElementById('shipText').textContent =
+        remain === 0 ? '✓ You unlocked FREE shipping!' : 'Add ' + yen(remain) + ' to unlock FREE shipping';
+    }
+
+    document.querySelectorAll('.qty').forEach(q => {
+      const span = q.querySelector('span');
+      const [minus, plus] = q.querySelectorAll('button');
+      minus.addEventListener('click', () => { span.textContent = Math.max(1, +span.textContent - 1); recalc(); });
+      plus.addEventListener('click', () => { span.textContent = Math.min(9, +span.textContent + 1); recalc(); });
+    });
+
+    document.querySelectorAll('.save').forEach(s =>
+      s.addEventListener('click', () => { s.textContent = '✓ Saved'; s.style.color = '#16a34a'; })
+    );
+
+    const toast = document.getElementById('toast');
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    });
+
+    recalc();
+  </script>
+</body>
+</html>
